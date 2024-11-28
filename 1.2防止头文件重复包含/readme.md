@@ -1,9 +1,15 @@
 ## 防止头文件包含
-
 本次将展现三种示例：
-错误实例（会报错）、重复包含头文件示例但由于保护机制成功运行、正确实例
-该目录下的工程文件为：重复包含头文件示例但由于保护机制成功运行，用于理解机制的运行。
-本文着重讲述“重复包含头文件示例但由于保护机制成功运行”一节下的内容。
+
+"错误实例（会报错）"
+
+"重复包含头文件示例但由于保护机制成功运行"
+
+"正确实例"
+
+该目录下的工程文件为："重复包含头文件示例但由于保护机制成功运行"，用于理解机制的运行。
+
+本文着重讲述“重复包含头文件示例但由于保护机制成功运行”一节的内容。
 
 ---
 
@@ -67,25 +73,88 @@ void functionA();  // 声明 functionA
 b.h
 
 ``` c++
-#ifndef B_H
+#ifndef B_H        // 防止重复包含
 #define B_H
 
-void functionB();
+#include "a.h"     // b.h 依赖 a.h，可能会重复包含
+
+void functionB();  // 声明 functionB
 
 #endif 
 ```
 
+c.h
+```c++
+#ifndef C_H        // 防止重复包含
+#define C_H
+
+#include "a.h"     // c.h 也依赖 a.h，可能会重复包含
+
+void functionC();  // 声明 functionC
+
+#endif
+
+```
+
+a.cpp
+```c++
+#include "a.h"
+#include <iostream>
+
+void functionA() {
+    std::cout << "Function A is called!" << std::endl;
+}
+```
+
+b.cpp
+```c++
+#include "b.h"
+#include <iostream>
+
+void functionB() {
+    std::cout << "Function B is called!" << std::endl;
+    functionA(); // 调用 a.h 中声明、a.cpp 中定义的 functionA()
+}
+```
+
+c.cpp
+```c++
+#include "c.h"
+#include <iostream>
+
+void functionC() {
+    std::cout << "Function C is called!" << std::endl;
+    functionA(); // 调用 a.h 中声明、a.cpp 中定义的 functionA()
+}
+```
 main.cpp
 
 ```c++
-#include "a.h"
+#include "b.h"  // 包含 b.h
+#include "c.h"  // 包含 c.h，间接重复包含了 a.h
 
 int main() {
-    functionA();
-    functionB();
+    functionB(); // 调用 b.h 中的 functionB
+    functionC(); // 调用 c.h 中的 functionC
     return 0;
 }
+
 ```
+
+### 风险
+在上述代码中：
+
+main.cpp 包含了 b.h 和 c.h。
+b.h 和 c.h 都包含了 a.h。
+
+### 结果
+```
+Function B is called!
+Function A is called!
+Function C is called!
+Function A is called!
+```
+
 ### 疑问：
 
 #### 是否必须同时出现？
