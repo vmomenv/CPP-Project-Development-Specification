@@ -170,3 +170,63 @@ Function A is called!
 MY_HEADER_A_H
 HEADER_FOR_A
 GUARD_A_H
+
+### 正常代码规范
+简单的计算器项目，包含加法和乘法功能
+文件内容
+1. add.h
+```c++
+#ifndef ADD_H       // 防止重复包含
+#define ADD_H
+
+// 声明加法函数
+int add(int a, int b);
+
+#endif
+```
+
+2. multiply.h
+```c++
+#ifndef MULTIPLY_H  // 防止重复包含
+#define MULTIPLY_H
+
+// 声明乘法函数
+int multiply(int a, int b);
+
+#endif
+```
+3. add.cpp
+
+```c++
+#include "add.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+
+
+4. multiply.cpp
+```c++
+#include "multiply.h"
+
+int multiply(int a, int b) {
+    return a * b;
+}
+```
+5. main.cpp
+
+```c++
+#include <iostream>
+#include "add.h"         // 包含加法模块
+#include "multiply.h"    // 包含乘法模块
+
+int main() {
+    int x = 5, y = 3;
+
+    std::cout << "Addition of " << x << " and " << y << " is: " << add(x, y) << std::endl;
+    std::cout << "Multiplication of " << x << " and " << y << " is: " << multiply(x, y) << std::endl;
+
+    return 0;
+}
+```
